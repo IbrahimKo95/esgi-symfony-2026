@@ -1,3 +1,6 @@
-body {
-    background-color: skyblue;
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
+

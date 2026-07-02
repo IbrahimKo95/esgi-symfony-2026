@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="text-center py-16 px-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white">
+        <h1 class="text-4xl font-extrabold mb-4">Gerez vos depenses simplement</h1>
+        <p class="text-indigo-100 max-w-xl mx-auto mb-8">
+            Suivez vos transactions, definissez des budgets par categorie et laissez l'application
+            detecter automatiquement les depenses anormales.
+        </p>
+        {% if not app.user %}
+            <div class="flex gap-4 justify-center">
+                <a href="{{ path('app_register') }}" class="bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-indigo-50 transition">Creer un compte</a>
+                <a href="{{ path('app_login') }}" class="border border-white/40 text-white px-5 py-2.5 rounded-lg hover:bg-white/10 transition">Se connecter</a>
+            </div>
+        {% else %}
+            <a href="{{ path('app_profile') }}" class="inline-block bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg hover:bg-indigo-50 transition">Voir mon profil</a>
+        {% endif %}
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-6 mt-12">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M18.7 8 12 14.7 8.7 11.4 3 17"></path>
+                </svg>
+            </div>
+            <h2 class="font-semibold text-gray-900 mb-1">Suivi des transactions</h2>
+            <p class="text-sm text-gray-500">Enregistrez vos depenses et revenus par portefeuille, categorie et tags.</p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                    <path d="M8 2v4M16 2v4"></path>
+                </svg>
+            </div>
+            <h2 class="font-semibold text-gray-900 mb-1">Budgets mensuels</h2>
+            <p class="text-sm text-gray-500">Fixez un plafond par categorie et suivez votre consommation.</p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.3 3.9 1.8 18a1.5 1.5 0 0 0 1.3 2.3h17.8a1.5 1.5 0 0 0 1.3-2.3L13.7 3.9a1.5 1.5 0 0 0-2.6 0Z"></path>
+                    <path d="M12 9v4M12 17h.01"></path>
+                </svg>
+            </div>
+            <h2 class="font-semibold text-gray-900 mb-1">Detection d'anomalies</h2>
+            <p class="text-sm text-gray-500">Recevez une alerte en cas de depense ou de tendance inhabituelle.</p>
+        </div>
+    </div>
+{% endblock %}

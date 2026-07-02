@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Mon profil</h1>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 px-6 py-8 flex items-center gap-4">
+            <span class="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 text-white text-xl font-semibold border-2 border-white/30">
+                {{ user.firstName|first|upper }}{{ user.lastName|first|upper }}
+            </span>
+            <div>
+                <p class="text-white font-semibold text-lg">{{ user.firstName }} {{ user.lastName }}</p>
+                <p class="text-indigo-100 text-sm">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <dl class="divide-y divide-gray-100">
+            <div class="px-6 py-4 flex justify-between items-center">
+                <dt class="text-gray-500 text-sm">Prenom</dt>
+                <dd class="text-gray-900 font-medium">{{ user.firstName }}</dd>
+            </div>
+            <div class="px-6 py-4 flex justify-between items-center">
+                <dt class="text-gray-500 text-sm">Nom</dt>
+                <dd class="text-gray-900 font-medium">{{ user.lastName }}</dd>
+            </div>
+            <div class="px-6 py-4 flex justify-between items-center">
+                <dt class="text-gray-500 text-sm">Email</dt>
+                <dd class="text-gray-900 font-medium">{{ user.email }}</dd>
+            </div>
+            <div class="px-6 py-4 flex justify-between items-center">
+                <dt class="text-gray-500 text-sm">Devise</dt>
+                <dd class="text-gray-900 font-medium">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{{ user.currency }}</span>
+                </dd>
+            </div>
+        </dl>
+    </div>
+{% endblock %}

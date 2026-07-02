@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="max-w-sm mx-auto">
+        <div class="text-center mb-6">
+            <span class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M19 8v6M22 11h-6"></path>
+                </svg>
+            </span>
+            <h1 class="text-xl font-bold text-gray-900">Creer un compte</h1>
+            <p class="text-sm text-gray-500 mt-1">Rejoignez ExpenseManager en quelques secondes</p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            {{ form_errors(registrationForm) }}
+
+            {{ form_start(registrationForm, {attr: {class: 'space-y-4'}}) }}
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        {{ form_label(registrationForm.firstName, 'Prenom', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(registrationForm.firstName, {attr: {class: 'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'}}) }}
+                        {{ form_errors(registrationForm.firstName) }}
+                    </div>
+                    <div>
+                        {{ form_label(registrationForm.lastName, 'Nom', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(registrationForm.lastName, {attr: {class: 'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'}}) }}
+                        {{ form_errors(registrationForm.lastName) }}
+                    </div>
+                </div>
+                <div>
+                    {{ form_label(registrationForm.email, 'Email', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(registrationForm.email, {attr: {class: 'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+                <div>
+                    {{ form_label(registrationForm.plainPassword, 'Mot de passe', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(registrationForm.plainPassword, {attr: {class: 'w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'}}) }}
+                    {{ form_errors(registrationForm.plainPassword) }}
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Creer mon compte</button>
+            {{ form_end(registrationForm) }}
+        </div>
+
+        <p class="text-center text-sm text-gray-500 mt-4">
+            Deja un compte ? <a href="{{ path('app_login') }}" class="text-indigo-600 font-medium hover:underline">Connectez-vous</a>
+        </p>
+    </div>
+{% endblock %}
