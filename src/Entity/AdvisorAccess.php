@@ -24,7 +24,7 @@ class AdvisorAccess
     private ?User $advisor = null;
 
     #[ORM\Column(length: 10)]
-    #[Assert\Choice(['pending', 'active', 'revoked'])]
+    #[Assert\Choice(choices: ['pending', 'active', 'revoked'])]
     private ?string $status = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transactions recurrentes - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Transactions recurrentes</h1>
+        <a href="{{ path('recurring_transaction_new') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Nouvelle programmation</a>
+    </div>
+
+    {% if recurringTransactions is empty %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Aucune transaction recurrente programmee.
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+            {% for rt in recurringTransactions %}
+                <div class="flex justify-between items-center px-5 py-3">
+                    <div>
+                        <p class="text-gray-900 font-medium">{{ rt.description|default('(Sans description)') }}</p>
+                        <p class="text-xs text-gray-500">
+                            {{ rt.wallet.name }} - {{ rt.category.name }} -
+                            {{ {'weekly': 'Hebdomadaire', 'monthly': 'Mensuelle', 'yearly': 'Annuelle'}[rt.frequency]|default(rt.frequency) }}
+                            - prochaine occurrence : {{ rt.nextOccurrence|date('d/m/Y') }}
+                            {% if not rt.isActive %}<span class="text-red-500">(inactive)</span>{% endif %}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-semibold text-gray-900">{{ rt.amount }} {{ rt.wallet.currency }}</span>
+                        <a href="{{ path('recurring_transaction_edit', {id: rt.id}) }}" class="text-sm text-indigo-600 hover:underline">Modifier</a>
+                        <form method="post" action="{{ path('recurring_transaction_delete', {id: rt.id}) }}" onsubmit="return confirm('Supprimer cette programmation ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete-recurring-' ~ rt.id) }}">
+                            <button type="submit" class="text-sm text-red-600 hover:underline">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

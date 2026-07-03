@@ -15,7 +15,7 @@ class Anomaly
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
-    #[Assert\Choice(['single_expense', 'category_increase', 'budget_risk'])]
+    #[Assert\Choice(choices: ['single_expense', 'category_increase', 'budget_risk'])]
     private ?string $type = null;
 
     #[ORM\ManyToOne(targetEntity: Transaction::class)]
@@ -35,7 +35,7 @@ class Anomaly
     private ?string $message = null;
 
     #[ORM\Column(length: 10)]
-    #[Assert\Choice(['info', 'warning', 'critical'])]
+    #[Assert\Choice(choices: ['info', 'warning', 'critical'])]
     private ?string $severity = null;
 
     #[ORM\Column(options: ['default' => false])]

@@ -34,7 +34,7 @@ class RecurringTransaction
     private ?User $author = null;
 
     #[ORM\Column(length: 10)]
-    #[Assert\Choice(['weekly', 'monthly', 'yearly'])]
+    #[Assert\Choice(choices: ['weekly', 'monthly', 'yearly'])]
     private ?string $frequency = null;
 
     #[ORM\Column(type: 'date_immutable')]

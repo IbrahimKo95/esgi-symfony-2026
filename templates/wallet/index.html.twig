@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes portefeuilles - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Mes portefeuilles</h1>
+        <a href="{{ path('wallet_new') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Nouveau portefeuille</a>
+    </div>
+
+    {% if wallets is empty %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Vous n'avez encore aucun portefeuille. Creez-en un pour commencer a suivre vos depenses.
+        </div>
+    {% else %}
+        <div class="grid sm:grid-cols-2 gap-4">
+            {% for wallet in wallets %}
+                <a href="{{ path('wallet_show', {id: wallet.id}) }}" class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition block">
+                    <div class="flex justify-between items-start mb-2">
+                        <h2 class="font-semibold text-gray-900">{{ wallet.name }}</h2>
+                        {% if wallet.isShared %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">Collaboratif</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-500">
+                        {{ {'checking': 'Compte courant', 'savings': 'Epargne', 'cash': 'Especes'}[wallet.type]|default(wallet.type) }}
+                        - {{ wallet.currency }}
+                    </p>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

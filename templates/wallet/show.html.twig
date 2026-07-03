@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ wallet.name }} - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ wallet.name }}</h1>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ {'checking': 'Compte courant', 'savings': 'Epargne', 'cash': 'Especes'}[wallet.type]|default(wallet.type) }}
+                - {{ wallet.currency }}
+                {% if wallet.isShared %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 ml-2">Collaboratif</span>
+                {% else %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500 ml-2">Personnel</span>
+                {% endif %}
+            </p>
+        </div>
+        <a href="{{ path('transaction_index', {walletId: wallet.id}) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Voir les transactions</a>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm mb-6">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h2 class="font-semibold text-gray-900">Membres</h2>
+        </div>
+        <ul class="divide-y divide-gray-100">
+            {% for member in members %}
+                <li class="px-6 py-3 flex justify-between items-center">
+                    <span class="text-gray-800">{{ member.user.firstName }} {{ member.user.lastName }}</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                        {{ {'owner': 'Proprietaire', 'contributor': 'Contributeur', 'viewer': 'Lecteur'}[member.role]|default(member.role) }}
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if isOwner %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            {% if wallet.isShared %}
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-gray-900">Inviter un membre</h2>
+                    <form method="post" action="{{ path('wallet_toggle_shared', {id: wallet.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('toggle-shared-' ~ wallet.id) }}">
+                        <button type="submit" class="text-sm text-gray-500 hover:underline">Rendre personnel</button>
+                    </form>
+                </div>
+                {{ form_start(inviteForm, {action: path('wallet_invite', {id: wallet.id}), attr: {class: 'flex flex-wrap gap-3 items-end'}}) }}
+                    <div class="flex-1 min-w-[200px]">{{ form_row(inviteForm.email) }}</div>
+                    <div>{{ form_row(inviteForm.role) }}</div>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition mb-4">Inviter</button>
+                {{ form_end(inviteForm) }}
+            {% else %}
+                <h2 class="font-semibold text-gray-900 mb-2">Portefeuille personnel</h2>
+                <p class="text-sm text-gray-500 mb-4">Rendez ce portefeuille collaboratif pour pouvoir y inviter des membres.</p>
+                <form method="post" action="{{ path('wallet_toggle_shared', {id: wallet.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('toggle-shared-' ~ wallet.id) }}">
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Rendre collaboratif</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

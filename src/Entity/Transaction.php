@@ -15,6 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['expense' => Expense::class, 'income' => Income::class])]
 abstract class Transaction
 {
+    abstract public function getType(): string;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
