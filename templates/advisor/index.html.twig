@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes clients - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Mes clients</h1>
+
+    {% if accesses is empty %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Aucun client pour le moment.
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+            {% for access in accesses %}
+                <div class="px-6 py-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-800">{{ access.client.firstName }} {{ access.client.lastName }}</p>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                            {{ access.status == 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
+                            {{ {'pending': 'En attente', 'active': 'Actif'}[access.status]|default(access.status) }}
+                        </span>
+                    </div>
+                    {% if access.status == 'pending' %}
+                        <form method="post" action="{{ path('advisor_access_accept', {id: access.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('accept-access-' ~ access.id) }}">
+                            <button type="submit" class="text-sm text-indigo-600 hover:underline">Accepter</button>
+                        </form>
+                    {% elseif access.status == 'active' %}
+                        <a href="{{ path('advisor_client_show', {client: access.client.id}) }}" class="text-sm text-indigo-600 hover:underline">Voir le dashboard</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

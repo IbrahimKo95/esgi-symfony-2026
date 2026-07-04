@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon conseiller - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Mon conseiller financier</h1>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+        <h2 class="font-semibold text-gray-900 mb-4">Inviter un conseiller</h2>
+        {{ form_start(form, {attr: {class: 'flex flex-wrap gap-3 items-end'}}) }}
+            <div class="flex-1 min-w-[220px]">{{ form_row(form.email) }}</div>
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition mb-4">Inviter</button>
+        {{ form_end(form) }}
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+        {% if accesses is empty %}
+            <p class="px-6 py-4 text-sm text-gray-500">Aucun conseiller invite pour le moment.</p>
+        {% endif %}
+        {% for access in accesses %}
+            <div class="px-6 py-4 flex justify-between items-center">
+                <div>
+                    <p class="text-gray-800">{{ access.advisor.firstName }} {{ access.advisor.lastName }}</p>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                        {{ access.status == 'active' ? 'bg-emerald-50 text-emerald-700' : (access.status == 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-gray-100 text-gray-500') }}">
+                        {{ {'pending': 'En attente', 'active': 'Actif', 'revoked': 'Revoque'}[access.status]|default(access.status) }}
+                    </span>
+                </div>
+                {% if access.status != 'revoked' %}
+                    <form method="post" action="{{ path('advisor_access_revoke', {id: access.id}) }}" onsubmit="return confirm('Revoquer cet acces ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('revoke-access-' ~ access.id) }}">
+                        <button type="submit" class="text-sm text-red-600 hover:underline">Revoquer</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
