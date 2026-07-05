@@ -25,7 +25,7 @@ class WalletMember
     private ?User $user = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(['owner', 'contributor', 'viewer'])]
+    #[Assert\Choice(choices: ['owner', 'contributor', 'viewer'])]
     private ?string $role = null;
 
     #[ORM\Column(type: 'datetime_immutable')]

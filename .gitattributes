@@ -1,0 +1,28 @@
+# Normalise toutes les fins de ligne en LF (projet Docker/Linux)
+# Git detecte texte vs binaire, et force LF dans le depot ET le working tree.
+* text=auto eol=lf
+
+# Scripts qui doivent imperativement rester en LF
+*.sh   text eol=lf
+*.php  text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.twig text eol=lf
+
+# Fichiers binaires : aucune conversion de fin de ligne
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.svg  binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.otf  binary
+*.pdf  binary
+*.zip  binary
+*.gz   binary
+*.phar binary

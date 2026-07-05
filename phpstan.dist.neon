@@ -1,0 +1,14 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    doctrine:
+        objectManagerLoader: phpstan-bootstrap.php
+    ignoreErrors:
+        -
+            message: '#Method App\\Kernel::getAllowedEnvs\(\) is unused#'
+            path: src/Kernel.php
+
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon

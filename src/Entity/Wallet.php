@@ -19,7 +19,7 @@ class Wallet
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(['checking', 'savings', 'cash'])]
+    #[Assert\Choice(choices: ['checking', 'savings', 'cash'])]
     private ?string $type = null;
 
     #[ORM\Column(length: 3)]
