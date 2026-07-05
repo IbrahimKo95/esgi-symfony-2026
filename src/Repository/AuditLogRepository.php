@@ -15,4 +15,18 @@ class AuditLogRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, AuditLog::class);
     }
+
+    /**
+     * @return AuditLog[]
+     */
+    public function findRecent(int $limit = 100): array
+    {
+        return $this->createQueryBuilder('l')
+            ->leftJoin('l.actor', 'actor')
+            ->addSelect('actor')
+            ->orderBy('l.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Logs d'audit - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Logs d'audit</h1>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+        {% if logs is empty %}
+            <p class="px-6 py-4 text-sm text-gray-500">Aucun log pour le moment.</p>
+        {% endif %}
+        {% for log in logs %}
+            <div class="px-6 py-3 flex justify-between items-center">
+                <div>
+                    <p class="text-gray-800 text-sm">{{ log.action }} - {{ log.targetType }}#{{ log.targetId }}</p>
+                    <p class="text-xs text-gray-400">{{ log.actor.email }} - {{ log.createdAt|date('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Anomalies - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Supervision des anomalies</h1>
+
+    <div class="grid sm:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <p class="text-xs text-gray-500">Utilisateurs actifs</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.activeUsers }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <p class="text-xs text-gray-500">Transactions</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.transactionCount }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <p class="text-xs text-gray-500">Anomalies</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.anomalyCount }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <p class="text-xs text-gray-500">Taux d'anomalies</p>
+            <p class="text-2xl font-bold text-gray-900">{{ stats.anomalyRate }}%</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+        {% for anomaly in anomalies %}
+            <div class="px-6 py-3">
+                <p class="text-gray-800 text-sm">{{ anomaly.message }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ anomaly.user.email }} - {{ anomaly.detectedAt|date('d/m/Y H:i') }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

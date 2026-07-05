@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Utilisateurs - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Utilisateurs</h1>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="text-left text-gray-500 border-b border-gray-100">
+                <tr>
+                    <th class="px-6 py-3 font-normal">Nom</th>
+                    <th class="px-6 py-3 font-normal">Email</th>
+                    <th class="px-6 py-3 font-normal">Role</th>
+                    <th class="px-6 py-3 font-normal">Statut</th>
+                    <th class="px-6 py-3 font-normal"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for user in users %}
+                    <tr>
+                        <td class="px-6 py-3">{{ user.firstName }} {{ user.lastName }}</td>
+                        <td class="px-6 py-3 text-gray-500">{{ user.email }}</td>
+                        <td class="px-6 py-3">
+                            <form method="post" action="{{ path('admin_user_change_role', {id: user.id}) }}" class="flex items-center gap-2">
+                                <select name="role" onchange="this.form.requestSubmit()" class="border border-gray-300 rounded px-2 py-1 text-xs">
+                                    {% for role in availableRoles %}
+                                        <option value="{{ role }}" {{ role in user.roles ? 'selected' }}>{{ role }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                        <td class="px-6 py-3">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ user.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700' }}">
+                                {{ user.isActive ? 'Actif' : 'Desactive' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-right">
+                            <form method="post" action="{{ path('admin_user_toggle_active', {id: user.id}) }}">
+                                <button type="submit" class="text-sm text-indigo-600 hover:underline">
+                                    {{ user.isActive ? 'Desactiver' : 'Activer' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
