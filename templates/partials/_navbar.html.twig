@@ -13,6 +13,18 @@
 
         <div class="flex items-center gap-3 text-sm">
             {% if app.user %}
+                <a href="{{ path('currency_converter') }}" class="text-gray-600 hover:text-gray-900 transition">Devises</a>
+                {% if is_granted('ROLE_ADVISOR') %}
+                    <a href="{{ path('advisor_index') }}" class="text-gray-600 hover:text-gray-900 transition">Mes clients</a>
+                {% else %}
+                    <a href="{{ path('advisor_access_invite') }}" class="text-gray-600 hover:text-gray-900 transition">Mon conseiller</a>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin_user_index') }}" class="text-gray-600 hover:text-gray-900 transition">Utilisateurs</a>
+                    <a href="{{ path('admin_category_index') }}" class="text-gray-600 hover:text-gray-900 transition">Categories</a>
+                    <a href="{{ path('admin_anomaly_index') }}" class="text-gray-600 hover:text-gray-900 transition">Supervision</a>
+                    <a href="{{ path('admin_audit_log_index') }}" class="text-gray-600 hover:text-gray-900 transition">Logs</a>
+                {% endif %}
                 <a href="{{ path('app_profile') }}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition">
                     <span class="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
                         {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
