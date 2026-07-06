@@ -14,6 +14,11 @@ class Expense extends Transaction
     #[ORM\JoinColumn(nullable: true)]
     private ?RecurringTransaction $recurringTransaction = null;
 
+    public function getType(): string
+    {
+        return 'expense';
+    }
+
     public function isRecurring(): bool
     {
         return $this->isRecurring;

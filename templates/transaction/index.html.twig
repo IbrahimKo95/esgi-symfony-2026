@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transactions - {{ wallet.name }} - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <a href="{{ path('wallet_show', {id: wallet.id}) }}" class="text-sm text-indigo-600 hover:underline">&larr; {{ wallet.name }}</a>
+            <h1 class="text-2xl font-bold text-gray-900 mt-1">Transactions</h1>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ path('transaction_new', {walletId: wallet.id, type: 'expense'}) }}" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">+ Depense</a>
+            <a href="{{ path('transaction_new', {walletId: wallet.id, type: 'income'}) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">+ Revenu</a>
+        </div>
+    </div>
+
+    <form method="get" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap gap-3 items-end">
+        <div>
+            <label class="block text-xs text-gray-500 mb-1">Type</label>
+            <select name="type" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                <option value="">Tous</option>
+                <option value="expense" {{ filters.type == 'expense' ? 'selected' }}>Depenses</option>
+                <option value="income" {{ filters.type == 'income' ? 'selected' }}>Revenus</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs text-gray-500 mb-1">Categorie</label>
+            <select name="categoryId" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                <option value="">Toutes</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {{ filters.categoryId == category.id ? 'selected' }}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs text-gray-500 mb-1">Tag</label>
+            <select name="tagId" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                <option value="">Tous</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {{ filters.tagId == tag.id ? 'selected' }}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs text-gray-500 mb-1">Du</label>
+            <input type="date" name="from" value="{{ filters.from ? filters.from|date('Y-m-d') : '' }}" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+        </div>
+        <div>
+            <label class="block text-xs text-gray-500 mb-1">Au</label>
+            <input type="date" name="to" value="{{ filters.to ? filters.to|date('Y-m-d') : '' }}" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+        </div>
+        <button type="submit" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-gray-900 transition">Filtrer</button>
+    </form>
+
+    {% if transactions|length == 0 %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Aucune transaction pour ce portefeuille.
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+            {% for transaction in transactions %}
+                <a href="{{ path('transaction_show', {id: transaction.id}) }}" class="flex justify-between items-center px-5 py-3 hover:bg-gray-50 transition">
+                    <div>
+                        <p class="text-gray-900 font-medium">{{ transaction.description|default('(Sans description)') }}</p>
+                        <p class="text-xs text-gray-500">{{ transaction.category.name }} - {{ transaction.date|date('d/m/Y') }} - {{ transaction.author.firstName }}</p>
+                        {% if transaction.tags|length > 0 %}
+                            <div class="flex flex-wrap gap-1 mt-1.5">
+                                {% for tag in transaction.tags %}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <span class="font-semibold {{ transaction.type == 'income' ? 'text-emerald-600' : 'text-gray-900' }} whitespace-nowrap ml-4">
+                        {{ transaction.type == 'income' ? '+' : '-' }}{{ transaction.amount }} {{ wallet.currency }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
+            <span>{{ total }} transaction{{ total > 1 ? 's' : '' }}</span>
+            <div class="flex gap-2">
+                {% if page > 1 %}
+                    <a href="{{ path('transaction_index', filters|merge({walletId: wallet.id, page: page - 1})) }}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">Precedent</a>
+                {% endif %}
+                {% if (page * perPage) < total %}
+                    <a href="{{ path('transaction_index', filters|merge({walletId: wallet.id, page: page + 1})) }}" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50">Suivant</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

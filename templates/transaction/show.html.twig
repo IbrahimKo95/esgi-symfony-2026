@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ transaction.description|default('Transaction') }} - ExpenseManager{% endblock %}
+
+{% block main %}
+    <a href="{{ path('transaction_index', {walletId: transaction.wallet.id}) }}" class="text-sm text-indigo-600 hover:underline">&larr; {{ transaction.wallet.name }}</a>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mt-4 mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900">{{ transaction.description|default('(Sans description)') }}</h1>
+                <p class="text-sm text-gray-500 mt-1">{{ transaction.category.name }} - {{ transaction.date|date('d/m/Y H:i') }}</p>
+            </div>
+            <span class="text-2xl font-bold {{ transaction.type == 'income' ? 'text-emerald-600' : 'text-gray-900' }}">
+                {{ transaction.type == 'income' ? '+' : '-' }}{{ transaction.amount }} {{ transaction.wallet.currency }}
+            </span>
+        </div>
+
+        {% if transaction.tags|length > 0 %}
+            <div class="flex flex-wrap gap-1.5 mb-4">
+                {% for tag in transaction.tags %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <p class="text-sm text-gray-500">Ajoutee par {{ transaction.author.firstName }} {{ transaction.author.lastName }}</p>
+
+        <div class="flex gap-2 mt-4">
+            <a href="{{ path('transaction_edit', {id: transaction.id}) }}" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Modifier</a>
+            <form method="post" action="{{ path('transaction_delete', {id: transaction.id}) }}" onsubmit="return confirm('Supprimer cette transaction ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete-transaction-' ~ transaction.id) }}">
+                <button type="submit" class="bg-white border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition">Supprimer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+        <h2 class="font-semibold text-gray-900 mb-4">Commentaires</h2>
+
+        {% if comments|length == 0 %}
+            <p class="text-sm text-gray-500 mb-4">Aucun commentaire pour le moment.</p>
+        {% else %}
+            <ul class="space-y-3 mb-4">
+                {% for comment in comments %}
+                    <li class="border border-gray-100 rounded-lg p-3">
+                        <p class="text-sm text-gray-800">{{ comment.content }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ comment.author.firstName }} - {{ comment.createdAt|date('d/m/Y H:i') }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="{{ path('transaction_comment_new', {id: transaction.id}) }}" class="flex gap-2">
+            <input type="text" name="content" placeholder="Ajouter un commentaire..." required class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Envoyer</button>
+        </form>
+    </div>
+{% endblock %}

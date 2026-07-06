@@ -13,6 +13,9 @@
 
         <div class="flex items-center gap-3 text-sm">
             {% if app.user %}
+                <a href="{{ path('wallet_index') }}" class="text-gray-600 hover:text-gray-900 transition">Portefeuilles</a>
+                <a href="{{ path('tag_index') }}" class="text-gray-600 hover:text-gray-900 transition">Tags</a>
+                <a href="{{ path('recurring_transaction_index') }}" class="text-gray-600 hover:text-gray-900 transition">Recurrentes</a>
                 <a href="{{ path('currency_converter') }}" class="text-gray-600 hover:text-gray-900 transition">Devises</a>
                 {% if is_granted('ROLE_ADVISOR') %}
                     <a href="{{ path('advisor_index') }}" class="text-gray-600 hover:text-gray-900 transition">Mes clients</a>

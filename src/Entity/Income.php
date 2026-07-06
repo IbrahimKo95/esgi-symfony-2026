@@ -10,6 +10,11 @@ class Income extends Transaction
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $source = null;
 
+    public function getType(): string
+    {
+        return 'income';
+    }
+
     public function getSource(): ?string
     {
         return $this->source;
