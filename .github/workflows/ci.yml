@@ -61,6 +61,12 @@ jobs:
       - name: Load fixtures
         run: php bin/console doctrine:fixtures:load --no-interaction
 
+      - name: Install vendor assets
+        run: php bin/console importmap:install
+
+      - name: Build Tailwind CSS
+        run: php bin/console tailwind:build
+
       - name: PHPStan
         run: vendor/bin/phpstan analyse --memory-limit=1G
 
