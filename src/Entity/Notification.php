@@ -23,7 +23,7 @@ class Notification
     private ?Anomaly $anomaly = null;
 
     #[ORM\Column(length: 10)]
-    #[Assert\Choice(['in_app', 'email'])]
+    #[Assert\Choice(choices: ['in_app', 'email'])]
     private ?string $channel = null;
 
     #[ORM\Column(type: 'text')]

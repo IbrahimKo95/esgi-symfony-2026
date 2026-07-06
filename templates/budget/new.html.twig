@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau budget - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="max-w-sm mx-auto">
+        <h1 class="text-xl font-bold text-gray-900 mb-6">Nouveau budget</h1>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            {{ form_start(form) }}
+                {{ form_row(form.wallet) }}
+                {{ form_row(form.category) }}
+                {{ form_row(form.month) }}
+                {{ form_row(form.amount) }}
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Creer</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

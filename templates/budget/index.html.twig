@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes budgets - ExpenseManager{% endblock %}
+
+{% block main %}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Mes budgets</h1>
+        <a href="{{ path('budget_new') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">Nouveau budget</a>
+    </div>
+
+    {% if rows is empty %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Aucun budget defini pour le moment.
+        </div>
+    {% else %}
+        <div class="space-y-3">
+            {% for row in rows %}
+                {% set budget = row.budget %}
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-900">{{ budget.category.name }}</p>
+                            <p class="text-xs text-gray-500">{{ budget.wallet.name }} - {{ budget.month|date('m/Y') }}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-medium {{ row.percent >= 100 ? 'text-red-600' : (row.percent >= 80 ? 'text-amber-600' : 'text-gray-700') }}">
+                                {{ row.spent|number_format(2) }} / {{ budget.amount }} {{ budget.wallet.currency }}
+                            </span>
+                            <form method="post" action="{{ path('budget_delete', {id: budget.id}) }}" onsubmit="return confirm('Supprimer ce budget ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete-budget-' ~ budget.id) }}">
+                                <button type="submit" class="text-sm text-red-600 hover:underline">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="h-2 rounded-full {{ row.percent >= 100 ? 'bg-red-500' : (row.percent >= 80 ? 'bg-amber-500' : 'bg-indigo-600') }}" style="width: {{ row.percent }}%"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

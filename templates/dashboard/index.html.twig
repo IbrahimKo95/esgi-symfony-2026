@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - ExpenseManager{% endblock %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Repartition par categorie (ce mois-ci)</h2>
+            {% if categoryLabels is empty %}
+                <p class="text-sm text-gray-500">Aucune depense ce mois-ci.</p>
+            {% else %}
+                <canvas
+                    data-controller="chart"
+                    data-chart-type-value="doughnut"
+                    data-chart-data-value="{{ {
+                        labels: categoryLabels,
+                        datasets: [{ data: categoryTotals, backgroundColor: ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0891b2', '#7c3aed', '#db2777', '#65a30d', '#ea580c', '#0284c7'] }]
+                    }|json_encode }}"
+                ></canvas>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Evolution mensuelle</h2>
+            <canvas
+                data-controller="chart"
+                data-chart-type-value="bar"
+                data-chart-data-value="{{ {
+                    labels: months,
+                    datasets: [
+                        { label: 'Depenses', data: expenseByMonth, backgroundColor: '#dc2626' },
+                        { label: 'Revenus', data: incomeByMonth, backgroundColor: '#059669' }
+                    ]
+                }|json_encode }}"
+            ></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="font-semibold text-gray-900">Alertes actives</h2>
+            <a href="{{ path('anomaly_index') }}" class="text-sm text-indigo-600 hover:underline">Voir tout</a>
+        </div>
+        {% if activeAnomalies is empty %}
+            <p class="px-6 py-4 text-sm text-gray-500">Aucune alerte active.</p>
+        {% else %}
+            <ul class="divide-y divide-gray-100">
+                {% for anomaly in activeAnomalies %}
+                    <li class="px-6 py-3 text-sm text-gray-700">{{ anomaly.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

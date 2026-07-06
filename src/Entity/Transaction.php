@@ -6,6 +6,7 @@ use App\Repository\TransactionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
@@ -15,34 +16,45 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(['expense' => Expense::class, 'income' => Income::class])]
 abstract class Transaction
 {
+    #[Groups(['transaction:read'])]
+    abstract public function getType(): string;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['transaction:read'])]
     protected ?int $id = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\Positive]
+    #[Groups(['transaction:read', 'transaction:write'])]
     protected ?string $amount = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['transaction:read', 'transaction:write'])]
     protected ?\DateTimeImmutable $date = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['transaction:read', 'transaction:write'])]
     protected ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['transaction:read'])]
     protected ?Category $category = null;
 
     #[ORM\ManyToOne(targetEntity: Wallet::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['transaction:read'])]
     protected ?Wallet $wallet = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['transaction:read'])]
     protected ?User $author = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['transaction:read'])]
     protected \DateTimeImmutable $createdAt;
 
     /**

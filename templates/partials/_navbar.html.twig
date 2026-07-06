@@ -13,6 +13,9 @@
 
         <div class="flex items-center gap-3 text-sm">
             {% if app.user %}
+                <a href="{{ path('dashboard_index') }}" class="text-gray-600 hover:text-gray-900 transition">Dashboard</a>
+                <a href="{{ path('budget_index') }}" class="text-gray-600 hover:text-gray-900 transition">Budgets</a>
+                <a href="{{ path('anomaly_index') }}" class="text-gray-600 hover:text-gray-900 transition">Anomalies</a>
                 <a href="{{ path('app_profile') }}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition">
                     <span class="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
                         {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
