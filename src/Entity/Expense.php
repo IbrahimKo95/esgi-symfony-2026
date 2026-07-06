@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 class Expense extends Transaction
 {
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['transaction:read', 'transaction:write'])]
     private bool $isRecurring = false;
 
     #[ORM\ManyToOne(targetEntity: RecurringTransaction::class)]

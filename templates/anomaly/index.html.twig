@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Anomalies - ExpenseManager{% endblock %}
+
+{% set severityClasses = {
+    'info': 'bg-blue-50 text-blue-700 border-blue-100',
+    'warning': 'bg-amber-50 text-amber-700 border-amber-100',
+    'critical': 'bg-red-50 text-red-700 border-red-100',
+} %}
+
+{% block main %}
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Anomalies detectees</h1>
+
+    {% if anomalies is empty %}
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-500">
+            Aucune anomalie detectee pour le moment.
+        </div>
+    {% else %}
+        <div class="space-y-3">
+            {% for anomaly in anomalies %}
+                <div class="bg-white rounded-xl border {{ anomaly.isRead ? 'border-gray-100 opacity-60' : 'border-gray-200' }} shadow-sm p-4 flex justify-between items-start gap-4">
+                    <div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border {{ severityClasses[anomaly.severity]|default('bg-gray-50 text-gray-700 border-gray-100') }}">
+                            {{ anomaly.severity|upper }}
+                        </span>
+                        <p class="text-gray-800 mt-2">{{ anomaly.message }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ anomaly.detectedAt|date('d/m/Y H:i') }}</p>
+                    </div>
+                    {% if not anomaly.isRead %}
+                        <form method="post" action="{{ path('anomaly_mark_read', {id: anomaly.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('read-anomaly-' ~ anomaly.id) }}">
+                            <button type="submit" class="text-sm text-indigo-600 hover:underline whitespace-nowrap">Marquer lu</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

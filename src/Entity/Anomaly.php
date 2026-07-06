@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AnomalyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalyRepository::class)]
@@ -12,10 +13,12 @@ class Anomaly
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['anomaly:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 30)]
     #[Assert\Choice(choices: ['single_expense', 'category_increase', 'budget_risk'])]
+    #[Groups(['anomaly:read'])]
     private ?string $type = null;
 
     #[ORM\ManyToOne(targetEntity: Transaction::class)]
@@ -24,6 +27,7 @@ class Anomaly
 
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['anomaly:read'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -32,16 +36,20 @@ class Anomaly
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank]
+    #[Groups(['anomaly:read'])]
     private ?string $message = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\Choice(choices: ['info', 'warning', 'critical'])]
+    #[Groups(['anomaly:read'])]
     private ?string $severity = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['anomaly:read'])]
     private bool $isRead = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['anomaly:read'])]
     private \DateTimeImmutable $detectedAt;
 
     public function __construct()

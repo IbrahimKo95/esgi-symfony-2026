@@ -1,6 +1,8 @@
 <nav class="sticky top-0 z-10 bg-white/80 backdrop-blur border-b border-gray-200">
-    <div class="max-w-4xl mx-auto px-4 h-16 flex justify-between items-center">
-        <a href="{{ path('app_home') }}" class="flex items-center gap-2 font-bold text-gray-900">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex justify-between items-center gap-6">
+
+        {# Logo #}
+        <a href="{{ path('app_home') }}" class="flex items-center gap-2 font-bold text-gray-900 shrink-0">
             <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="6" width="20" height="14" rx="2"></rect>
@@ -11,34 +13,83 @@
             <span>ExpenseManager</span>
         </a>
 
-        <div class="flex items-center gap-3 text-sm">
-            {% if app.user %}
-                <a href="{{ path('wallet_index') }}" class="text-gray-600 hover:text-gray-900 transition">Portefeuilles</a>
-                <a href="{{ path('tag_index') }}" class="text-gray-600 hover:text-gray-900 transition">Tags</a>
-                <a href="{{ path('recurring_transaction_index') }}" class="text-gray-600 hover:text-gray-900 transition">Recurrentes</a>
-                <a href="{{ path('currency_converter') }}" class="text-gray-600 hover:text-gray-900 transition">Devises</a>
-                {% if is_granted('ROLE_ADVISOR') %}
-                    <a href="{{ path('advisor_index') }}" class="text-gray-600 hover:text-gray-900 transition">Mes clients</a>
-                {% else %}
-                    <a href="{{ path('advisor_access_invite') }}" class="text-gray-600 hover:text-gray-900 transition">Mon conseiller</a>
+        {% if app.user %}
+
+        {# Navigation principale #}
+        <div class="flex items-center gap-1 text-sm flex-1">
+
+            <a href="{{ path('dashboard_index') }}" class="px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition whitespace-nowrap">Dashboard</a>
+            <a href="{{ path('wallet_index') }}" class="px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition whitespace-nowrap">Portefeuilles</a>
+            <a href="{{ path('budget_index') }}" class="px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition whitespace-nowrap">Budgets</a>
+
+            {# Anomalies avec badge #}
+            <a href="{{ path('anomaly_index') }}" class="relative px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition whitespace-nowrap">
+                Anomalies
+                {% set unread = unread_anomaly_count() %}
+                {% if unread > 0 %}
+                    <span class="absolute top-0.5 right-0.5 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-white bg-red-500 rounded-full">{{ unread }}</span>
                 {% endif %}
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('admin_user_index') }}" class="text-gray-600 hover:text-gray-900 transition">Utilisateurs</a>
-                    <a href="{{ path('admin_category_index') }}" class="text-gray-600 hover:text-gray-900 transition">Categories</a>
-                    <a href="{{ path('admin_anomaly_index') }}" class="text-gray-600 hover:text-gray-900 transition">Supervision</a>
-                    <a href="{{ path('admin_audit_log_index') }}" class="text-gray-600 hover:text-gray-900 transition">Logs</a>
-                {% endif %}
-                <a href="{{ path('app_profile') }}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition">
-                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
-                        {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
-                    </span>
-                    <span class="hidden sm:inline">Profil</span>
-                </a>
-                <a href="{{ path('app_logout') }}" class="text-gray-500 hover:text-gray-900 transition">Deconnexion</a>
-            {% else %}
-                <a href="{{ path('app_login') }}" class="text-gray-600 hover:text-gray-900 transition">Connexion</a>
-                <a href="{{ path('app_register') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Inscription</a>
+            </a>
+
+            {# Dropdown Plus #}
+            <div class="relative" data-controller="dropdown">
+                <button data-action="click->dropdown#toggle" class="flex items-center gap-1 px-3 py-1.5 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition whitespace-nowrap">
+                    Plus
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div data-dropdown-target="menu" class="hidden absolute left-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20">
+                    <a href="{{ path('tag_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Tags</a>
+                    <a href="{{ path('recurring_transaction_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Récurrentes</a>
+                    <a href="{{ path('currency_converter') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Devises</a>
+                </div>
+            </div>
+
+            {# Dropdown Admin #}
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="relative" data-controller="dropdown">
+                <button data-action="click->dropdown#toggle" class="flex items-center gap-1 px-3 py-1.5 rounded-md text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 transition whitespace-nowrap">
+                    Admin
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div data-dropdown-target="menu" class="hidden absolute left-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20">
+                    <a href="{{ path('admin_user_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Utilisateurs</a>
+                    <a href="{{ path('admin_category_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Catégories</a>
+                    <a href="{{ path('admin_anomaly_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Supervision</a>
+                    <a href="{{ path('admin_audit_log_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Logs</a>
+                </div>
+            </div>
             {% endif %}
+
         </div>
+
+        {# Menu utilisateur #}
+        <div class="relative shrink-0" data-controller="dropdown">
+            <button data-action="click->dropdown#toggle" class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                    {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                </span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div data-dropdown-target="menu" class="hidden absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20">
+                <div class="px-4 py-2 text-xs text-gray-400 border-b border-gray-100">{{ app.user.email }}</div>
+                <a href="{{ path('app_profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Profil</a>
+                {% if is_granted('ROLE_ADVISOR') %}
+                    <a href="{{ path('advisor_index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Mes clients</a>
+                {% else %}
+                    <a href="{{ path('advisor_access_invite') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">Mon conseiller</a>
+                {% endif %}
+                <div class="border-t border-gray-100 mt-1 pt-1">
+                    <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="flex items-center gap-2 text-sm">
+            <a href="{{ path('app_login') }}" class="px-3 py-1.5 text-gray-600 hover:text-gray-900 transition">Connexion</a>
+            <a href="{{ path('app_register') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Inscription</a>
+        </div>
+        {% endif %}
+
     </div>
 </nav>

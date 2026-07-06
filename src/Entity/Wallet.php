@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\WalletRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: WalletRepository::class)]
@@ -12,10 +13,12 @@ class Wallet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['transaction:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
+    #[Groups(['transaction:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
@@ -23,6 +26,7 @@ class Wallet
     private ?string $type = null;
 
     #[ORM\Column(length: 3)]
+    #[Groups(['transaction:read'])]
     private ?string $currency = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
