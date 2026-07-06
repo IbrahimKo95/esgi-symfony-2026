@@ -13,8 +13,8 @@ use App\Repository\CategoryRepository;
 use App\Repository\CommentRepository;
 use App\Repository\TagRepository;
 use App\Repository\TransactionRepository;
-use App\Repository\WalletMemberRepository;
 use App\Repository\WalletRepository;
+use App\Security\Voter\TransactionVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -96,9 +96,9 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/transactions/{id}', name: 'transaction_show', methods: ['GET'])]
-    public function show(Transaction $transaction, WalletRepository $walletRepository, CommentRepository $commentRepository): Response
+    public function show(Transaction $transaction, CommentRepository $commentRepository): Response
     {
-        $this->denyAccessUnlessWalletAccessible($transaction->getWallet(), $walletRepository);
+        $this->denyAccessUnlessGranted(TransactionVoter::VIEW, $transaction);
 
         return $this->render('transaction/show.html.twig', [
             'transaction' => $transaction,
@@ -107,9 +107,9 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/transactions/{id}/edit', name: 'transaction_edit', methods: ['GET', 'POST'])]
-    public function edit(Transaction $transaction, Request $request, WalletMemberRepository $walletMemberRepository, EntityManagerInterface $entityManager): Response
+    public function edit(Transaction $transaction, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessTransactionEditable($transaction, $walletMemberRepository);
+        $this->denyAccessUnlessGranted(TransactionVoter::EDIT, $transaction);
 
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
@@ -129,9 +129,9 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/transactions/{id}/delete', name: 'transaction_delete', methods: ['POST'])]
-    public function delete(Transaction $transaction, Request $request, WalletMemberRepository $walletMemberRepository, CommentRepository $commentRepository, EntityManagerInterface $entityManager): Response
+    public function delete(Transaction $transaction, Request $request, CommentRepository $commentRepository, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessTransactionEditable($transaction, $walletMemberRepository);
+        $this->denyAccessUnlessGranted(TransactionVoter::EDIT, $transaction);
 
         if ($this->isCsrfTokenValid('delete-transaction-'.$transaction->getId(), $request->request->get('_token'))) {
             $walletId = $transaction->getWallet()->getId();
@@ -152,9 +152,9 @@ class TransactionController extends AbstractController
     }
 
     #[Route('/transactions/{id}/comments', name: 'transaction_comment_new', methods: ['POST'])]
-    public function addComment(Transaction $transaction, Request $request, WalletRepository $walletRepository, EntityManagerInterface $entityManager): Response
+    public function addComment(Transaction $transaction, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessWalletAccessible($transaction->getWallet(), $walletRepository);
+        $this->denyAccessUnlessGranted(TransactionVoter::VIEW, $transaction);
 
         $content = trim((string) $request->request->get('content'));
 
@@ -184,23 +184,6 @@ class TransactionController extends AbstractController
     private function denyAccessUnlessWalletAccessible(Wallet $wallet, WalletRepository $walletRepository): void
     {
         if (!$walletRepository->isAccessibleByUser($wallet, $this->getCurrentUser())) {
-            throw $this->createAccessDeniedException();
-        }
-    }
-
-    private function denyAccessUnlessTransactionEditable(Transaction $transaction, WalletMemberRepository $walletMemberRepository): void
-    {
-        // l'auteur de la transaction, ou le proprietaire/contributeur du portefeuille, peuvent modifier/supprimer
-        $user = $this->getCurrentUser();
-        $wallet = $transaction->getWallet();
-
-        if ($transaction->getAuthor() === $user || $wallet->getOwner() === $user) {
-            return;
-        }
-
-        $member = $walletMemberRepository->findOneBy(['wallet' => $wallet, 'user' => $user]);
-
-        if (!$member || 'contributor' !== $member->getRole()) {
             throw $this->createAccessDeniedException();
         }
     }

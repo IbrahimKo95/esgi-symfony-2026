@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\AdvisorAccess;
 use App\Entity\User;
 use App\Entity\Wallet;
 use App\Entity\WalletMember;
@@ -41,8 +42,15 @@ class WalletRepository extends ServiceEntityRepository
             return true;
         }
 
-        return $this->getEntityManager()
-            ->getRepository(WalletMember::class)
-            ->count(['wallet' => $wallet, 'user' => $user]) > 0;
+        if ($this->getEntityManager()->getRepository(WalletMember::class)->count(['wallet' => $wallet, 'user' => $user]) > 0) {
+            return true;
+        }
+
+        $access = $this->getEntityManager()->getRepository(AdvisorAccess::class)->findOneBy([
+            'advisor' => $user,
+            'client' => $wallet->getOwner(),
+        ]);
+
+        return null !== $access && 'active' === $access->getStatus();
     }
 }

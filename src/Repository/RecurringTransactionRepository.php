@@ -15,4 +15,15 @@ class RecurringTransactionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, RecurringTransaction::class);
     }
+
+    /** @return RecurringTransaction[] */
+    public function findDue(\DateTimeImmutable $asOf): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.isActive = true')
+            ->andWhere('r.nextOccurrence <= :today')
+            ->setParameter('today', $asOf)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\AdvisorAccess;
 use App\Entity\User;
+use App\Entity\Wallet;
 use App\Form\AdvisorInviteType;
 use App\Repository\AdvisorAccessRepository;
 use App\Repository\AnomalyRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserRepository;
+use App\Repository\WalletRepository;
 use App\Security\Voter\AdvisorAccessVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -103,14 +105,46 @@ class AdvisorController extends AbstractController
 
     #[Route('/advisor/clients/{client}', name: 'advisor_client_show', methods: ['GET'])]
     #[IsGranted('ROLE_ADVISOR')]
-    public function showClient(User $client, TransactionRepository $transactionRepository, AnomalyRepository $anomalyRepository): Response
+    public function showClient(User $client, TransactionRepository $transactionRepository, AnomalyRepository $anomalyRepository, WalletRepository $walletRepository): Response
     {
         $this->denyAccessUnlessGranted(AdvisorAccessVoter::VIEW_CLIENT_DATA, $client);
 
+        $monthStart = new \DateTimeImmutable('first day of this month');
+        $monthEnd = $monthStart->modify('+1 month');
+        $sixMonthsAgo = $monthStart->modify('-5 months');
+
+        $categoryBreakdown = $transactionRepository->findCategoryBreakdownForUser($client, $monthStart, $monthEnd);
+        $monthlyTotals = $transactionRepository->findMonthlyTotalsForUser($client, $sixMonthsAgo);
+
+        $months = [];
+        $cursor = $sixMonthsAgo;
+        while ($cursor <= $monthStart) {
+            $months[] = $cursor->format('Y-m');
+            $cursor = $cursor->modify('+1 month');
+        }
+
+        $expenseByMonth = array_fill_keys($months, 0.0);
+        $incomeByMonth = array_fill_keys($months, 0.0);
+        foreach ($monthlyTotals as $row) {
+            if (!isset($expenseByMonth[$row['month']])) {
+                continue;
+            }
+            if ('expense' === $row['type']) {
+                $expenseByMonth[$row['month']] = $row['total'];
+            } else {
+                $incomeByMonth[$row['month']] = $row['total'];
+            }
+        }
+
         return $this->render('advisor/client_show.html.twig', [
             'client' => $client,
-            'transactions' => $transactionRepository->findBy(['author' => $client], ['date' => 'DESC'], 30),
+            'wallets' => $walletRepository->findForUser($client),
             'anomalies' => $anomalyRepository->findBy(['user' => $client], ['detectedAt' => 'DESC'], 30),
+            'categoryLabels' => array_column($categoryBreakdown, 'category'),
+            'categoryTotals' => array_column($categoryBreakdown, 'total'),
+            'months' => $months,
+            'expenseByMonth' => array_values($expenseByMonth),
+            'incomeByMonth' => array_values($incomeByMonth),
         ]);
     }
 

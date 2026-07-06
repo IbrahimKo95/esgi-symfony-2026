@@ -4,9 +4,51 @@
 
 {% block main %}
     <a href="{{ path('advisor_index') }}" class="text-sm text-indigo-600 hover:underline">&larr; Mes clients</a>
-    <h1 class="text-2xl font-bold text-gray-900 mt-1 mb-6">{{ client.firstName }} {{ client.lastName }}</h1>
+    <div class="flex justify-between items-center mt-1 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">{{ client.firstName }} {{ client.lastName }}</h1>
+        <div class="flex gap-2">
+            {% for wallet in wallets %}
+                <a href="{{ path('wallet_show', {id: wallet.id}) }}" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                    {{ wallet.name }} →
+                </a>
+            {% endfor %}
+        </div>
+    </div>
 
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm mb-6">
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Répartition par catégorie (ce mois-ci)</h2>
+            {% if categoryLabels is empty %}
+                <p class="text-sm text-gray-500">Aucune dépense ce mois-ci.</p>
+            {% else %}
+                <canvas
+                    data-controller="chart"
+                    data-chart-type-value="doughnut"
+                    data-chart-data-value="{{ {
+                        labels: categoryLabels,
+                        datasets: [{ data: categoryTotals, backgroundColor: ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0891b2', '#7c3aed', '#db2777', '#65a30d', '#ea580c', '#0284c7'] }]
+                    }|json_encode }}"
+                ></canvas>
+            {% endif %}
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Évolution mensuelle</h2>
+            <canvas
+                data-controller="chart"
+                data-chart-type-value="bar"
+                data-chart-data-value="{{ {
+                    labels: months,
+                    datasets: [
+                        { label: 'Dépenses', data: expenseByMonth, backgroundColor: '#dc2626' },
+                        { label: 'Revenus', data: incomeByMonth, backgroundColor: '#059669' }
+                    ]
+                }|json_encode }}"
+            ></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100">
             <h2 class="font-semibold text-gray-900">Anomalies</h2>
         </div>
@@ -16,7 +58,7 @@
             <table class="w-full text-sm">
                 <thead class="text-left text-gray-500 border-b border-gray-100">
                     <tr>
-                        <th class="px-6 py-2 font-normal">Severite</th>
+                        <th class="px-6 py-2 font-normal">Sévérité</th>
                         <th class="px-6 py-2 font-normal">Message</th>
                         <th class="px-6 py-2 font-normal">Date</th>
                     </tr>
@@ -27,36 +69,6 @@
                             <td class="px-6 py-2">{{ anomaly.severity }}</td>
                             <td class="px-6 py-2">{{ anomaly.message }}</td>
                             <td class="px-6 py-2 text-gray-400">{{ anomaly.detectedAt|date('d/m/Y') }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
-        <div class="px-6 py-4 border-b border-gray-100">
-            <h2 class="font-semibold text-gray-900">Transactions recentes</h2>
-        </div>
-        {% if transactions is empty %}
-            <p class="px-6 py-4 text-sm text-gray-500">Aucune transaction.</p>
-        {% else %}
-            <table class="w-full text-sm">
-                <thead class="text-left text-gray-500 border-b border-gray-100">
-                    <tr>
-                        <th class="px-6 py-2 font-normal">Date</th>
-                        <th class="px-6 py-2 font-normal">Description</th>
-                        <th class="px-6 py-2 font-normal">Categorie</th>
-                        <th class="px-6 py-2 font-normal text-right">Montant</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    {% for transaction in transactions %}
-                        <tr>
-                            <td class="px-6 py-2 text-gray-400">{{ transaction.date|date('d/m/Y') }}</td>
-                            <td class="px-6 py-2">{{ transaction.description|default('-') }}</td>
-                            <td class="px-6 py-2">{{ transaction.category.name }}</td>
-                            <td class="px-6 py-2 text-right">{{ transaction.amount }} {{ transaction.wallet.currency }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

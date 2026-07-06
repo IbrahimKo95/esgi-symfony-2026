@@ -34,6 +34,10 @@ class RecurringTransaction
     private ?User $author = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\Choice(choices: ['expense', 'income'])]
+    private ?string $type = null;
+
+    #[ORM\Column(length: 10)]
     #[Assert\Choice(choices: ['weekly', 'monthly', 'yearly'])]
     private ?string $frequency = null;
 
@@ -104,6 +108,18 @@ class RecurringTransaction
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

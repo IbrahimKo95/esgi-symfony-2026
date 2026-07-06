@@ -33,6 +33,10 @@ class RecurringTransactionType extends AbstractType
         $user = $this->security->getUser();
 
         $builder
+            ->add('type', ChoiceType::class, [
+                'label' => 'Type',
+                'choices' => ['Dépense' => 'expense', 'Revenu' => 'income'],
+            ])
             ->add('amount', NumberType::class, ['label' => 'Montant', 'scale' => 2])
             ->add('description', TextType::class, ['label' => 'Description', 'required' => false])
             ->add('wallet', EntityType::class, [

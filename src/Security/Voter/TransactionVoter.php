@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\AdvisorAccess;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Entity\WalletMember;
@@ -49,14 +50,24 @@ class TransactionVoter extends Voter
             'user' => $user,
         ]);
 
-        if (!$member) {
-            return false;
+        if ($member) {
+            return match ($attribute) {
+                self::VIEW => true,
+                self::EDIT => 'contributor' === $member->getRole(),
+                default => false,
+            };
         }
 
-        return match ($attribute) {
-            self::VIEW => true, // owner/contributor/viewer peuvent tous consulter
-            self::EDIT => 'contributor' === $member->getRole(),
-            default => false,
-        };
+        // un conseiller avec accès actif au propriétaire du wallet peut consulter (jamais modifier)
+        if (self::VIEW === $attribute) {
+            $access = $this->entityManager->getRepository(AdvisorAccess::class)->findOneBy([
+                'advisor' => $user,
+                'client' => $wallet->getOwner(),
+            ]);
+
+            return null !== $access && 'active' === $access->getStatus();
+        }
+
+        return false;
     }
 }

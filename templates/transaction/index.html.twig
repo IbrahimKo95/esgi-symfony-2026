@@ -8,10 +8,12 @@
             <a href="{{ path('wallet_show', {id: wallet.id}) }}" class="text-sm text-indigo-600 hover:underline">&larr; {{ wallet.name }}</a>
             <h1 class="text-2xl font-bold text-gray-900 mt-1">Transactions</h1>
         </div>
+        {% if wallet.owner == app.user %}
         <div class="flex gap-2">
             <a href="{{ path('transaction_new', {walletId: wallet.id, type: 'expense'}) }}" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">+ Depense</a>
             <a href="{{ path('transaction_new', {walletId: wallet.id, type: 'income'}) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition">+ Revenu</a>
         </div>
+        {% endif %}
     </div>
 
     <form method="get" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap gap-3 items-end">
