@@ -25,7 +25,6 @@ jobs:
 
     env:
       APP_ENV: test
-      DATABASE_URL: postgresql://app:app@localhost:5432/app?serverVersion=16&charset=utf8
 
     steps:
       - name: Checkout
@@ -40,6 +39,9 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
+
+      - name: Create .env
+        run: echo "APP_SECRET=$(openssl rand -hex 16)" > .env
 
       - name: Lint YAML config
         run: php bin/console lint:yaml config --parse-tags
