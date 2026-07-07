@@ -26,7 +26,7 @@
                 </div>
             {% endif %}
 
-            <form method="post" class="space-y-4">
+            <form method="post" class="space-y-4" data-turbo="false">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input type="email" value="{{ last_username }}" name="_username" id="username" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" autocomplete="email" required autofocus>

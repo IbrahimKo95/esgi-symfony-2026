@@ -19,7 +19,7 @@
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             {{ form_errors(registrationForm) }}
 
-            {{ form_start(registrationForm, {attr: {class: 'space-y-4'}}) }}
+            {{ form_start(registrationForm, {attr: {class: 'space-y-4', 'data-turbo': 'false'}}) }}
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         {{ form_label(registrationForm.firstName, 'Prenom', {label_attr: {class: 'block text-sm font-medium text-gray-700 mb-1'}}) }}

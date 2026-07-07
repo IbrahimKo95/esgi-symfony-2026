@@ -1,0 +1,51 @@
+# fly.toml app configuration file generated for esgi-symfony-2026 on 2026-07-06T17:45:41+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'esgi-symfony-2026'
+primary_region = 'cdg'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  APP_ENV = 'prod'
+  APP_SHARE_DIR = 'var/share'
+  DEFAULT_URI = 'https://esgi-symfony-2026.fly.dev'
+  MAILER_DSN = 'null://null'
+
+[[mounts]]
+  source = 'symfony_var'
+  destination = '/var/www/html/var'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 8080
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ['tls', 'http']
+
+  [services.concurrency]
+    type = 'connections'
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.http_checks]]
+    interval = '15s'
+    timeout = '10s'
+    grace_period = '3m0s'
+    method = 'GET'
+    path = '/'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024
